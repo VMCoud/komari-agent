@@ -1,5 +1,13 @@
 //go:build linux
 
+// =====================================================================
+// MOTD 安全提醒相关测试已随功能一并注释禁用（见 cmd/warn_linux.go）。
+// 如需恢复：将下方 /* */ 注释块内容还原为普通代码即可。
+// =====================================================================
+
+package cmd
+
+/*
 package cmd
 
 import (
@@ -296,3 +304,4 @@ func TestLegacyUpdateMOTDHookCleanup(t *testing.T) {
 		t.Fatal("unmanaged legacy hook was changed")
 	}
 }
+*/

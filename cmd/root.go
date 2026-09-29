@@ -33,11 +33,12 @@ var RootCmd = &cobra.Command{
 	Short: "komari agent",
 	Long:  `komari agent`,
 	RunE: func(cmd *cobra.Command, args []string) error {
+		// 安全提醒（Windows toast 卸载提醒）已注释禁用
 		// Notification helpers must not load the service's config or credentials.
-		if flags.ShowWarning {
-			ShowToast()
-			return nil
-		}
+		// if flags.ShowWarning {
+		// 	ShowToast()
+		// 	return nil
+		// }
 		loadFromEnv() // 从环境变量加载配置，覆盖解析
 		if flags.ConfigFile != "" {
 			bytes, err := os.ReadFile(flags.ConfigFile)
@@ -56,9 +57,10 @@ var RootCmd = &cobra.Command{
 		stopCtx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 		defer stop()
 
-		stopWarning := startSecurityWarning(stopCtx)
-		defer stopWarning()
-		shutdown := newShutdownCoordinator(stopWarning, netstatic.Stop, os.Exit)
+		// 安全提醒（SSH/MOTD、Windows 登录横幅）已注释禁用
+		// stopWarning := startSecurityWarning(stopCtx)
+		// defer stopWarning()
+		shutdown := newShutdownCoordinator(func() {}, netstatic.Stop, os.Exit)
 		go func() {
 			<-stopCtx.Done()
 			log.Printf("shutting down gracefully...")

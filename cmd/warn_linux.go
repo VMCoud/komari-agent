@@ -2,6 +2,21 @@
 
 package cmd
 
+import "context"
+
+// =====================================================================
+// 安全提醒功能已按需求全部注释禁用（Linux SSH 登录 /etc/motd 横幅）
+// 原实现保留在下方 /* */ 注释块中，如需恢复：删除下方注释标记并还原
+// 原 import 列表即可。
+// =====================================================================
+
+func startSecurityWarning(ctx context.Context) func() {
+	return func() {}
+}
+
+/*
+package cmd
+
 import (
 	"context"
 	"fmt"
@@ -249,3 +264,4 @@ func writeMOTD(file motdFile, data []byte) error {
 	}
 	return os.Rename(tempPath, file.target)
 }
+*/

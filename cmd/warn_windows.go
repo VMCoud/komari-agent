@@ -2,6 +2,24 @@
 
 package cmd
 
+import "context"
+
+// =====================================================================
+// 安全提醒功能已按需求全部注释禁用（Windows toast 卸载提醒 / 登录横幅）
+// 原实现保留在下方 /* */ 注释块中，如需恢复：删除下方注释标记并还原
+// 原 import 列表即可。
+// =====================================================================
+
+func startSecurityWarning(ctx context.Context) func() {
+	return func() {}
+}
+
+// ShowToast 已禁用（空实现）
+func ShowToast() {}
+
+/*
+package cmd
+
 import (
 	"context"
 	"errors"
@@ -412,3 +430,4 @@ func destroyEnvironmentBlock(env *uint16) {
 	proc := userenv.NewProc("DestroyEnvironmentBlock")
 	_, _, _ = proc.Call(uintptr(unsafe.Pointer(env)))
 }
+*/

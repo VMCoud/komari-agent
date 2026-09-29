@@ -1,5 +1,14 @@
 package cmd
 
+// =====================================================================
+// 安全提醒文案已按需求全部注释禁用（与 cmd/warn_windows.go、cmd/warn_linux.go
+// 同步禁用）。原实现保留在下方 /* */ 注释块中，如需恢复：删除下方注释标记
+// 并还原原 import 列表即可。
+// =====================================================================
+
+/*
+package cmd
+
 import (
 	"fmt"
 	"net/url"
@@ -78,3 +87,4 @@ func warningCurrentUser() string {
 	}
 	return "the agent's account"
 }
+*/
