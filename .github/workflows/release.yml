@@ -1,18 +1,29 @@
 name: Release Binaries
 
+# 自动编译各平台/架构版本并发布到 GitHub Releases：
+# - push v* 标签（如 v1.0.0）时全自动编译 + 创建 Release + 上传二进制
+# - 也可手动 workflow_dispatch 指定 tag 重新编译发布
+# 发布后会自动触发 generate-release-notes.yml / release-docker.yml
+
 on:
-  release:
-    types: [published]
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag to build and publish, e.g. v1.0.0 (defaults to current ref)'
+        required: false
+        type: string
 
 permissions:
   contents: write
 
 jobs:
-  build-and-attach:
-    if: ${{ !github.event.release.prerelease }}
+  build-and-publish:
     runs-on: ubuntu-latest
-
     strategy:
+      fail-fast: false
       matrix:
         exclude:
           - goos: windows
@@ -41,26 +52,64 @@ jobs:
           GOOS: ${{ matrix.goos }}
           GOARCH: ${{ matrix.goarch }}
           CGO_ENABLED: 0
-          VERSION: ${{ github.event.release.tag_name }}
+          VERSION: ${{ inputs.tag || github.ref_name }}
         run: |
           BINARY_NAME=komari-agent-${{ matrix.goos }}-${{ matrix.goarch }}
           if [ "${{ matrix.goos }}" = "windows" ]; then
             BINARY_NAME=${BINARY_NAME}.exe
-          elif [ "${{ matrix.goos }}" = "darwin" ]; then
-            # macOS binaries typically do not have a file extension
-            true
           fi
-            go build -trimpath -ldflags="-s -w -X github.com/komari-monitor/komari-agent/update.CurrentVersion=${VERSION}" -o $BINARY_NAME
+          go build -trimpath -ldflags="-s -w -X github.com/komari-monitor/komari-agent/update.CurrentVersion=${VERSION}" -o $BINARY_NAME
+          sha256sum $BINARY_NAME
 
-      - name: Upload binary to release
+      - name: Upload binary as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: komari-agent-${{ matrix.goos }}-${{ matrix.goarch }}
+          path: komari-agent-${{ matrix.goos }}-${{ matrix.goarch }}*
+
+  publish:
+    needs: build-and-publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download all binaries
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+
+      - name: Create or update release and upload binaries
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ inputs.tag || github.ref_name }}
         run: |
-          BINARY_NAME=komari-agent-${{ matrix.goos }}-${{ matrix.goarch }}
-          if [ "${{ matrix.goos }}" = "windows" ]; then
-            BINARY_NAME=${BINARY_NAME}.exe
-          elif [ "${{ matrix.goos }}" = "darwin" ]; then
-            true
+          set -euxo pipefail
+
+          cd artifacts
+          sha256sum komari-agent-* > checksums.txt
+          cat checksums.txt
+          cd ..
+
+          TARGET="${GITHUB_SHA}"
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            TARGET="main"
           fi
-          gh release upload ${{ github.event.release.tag_name }} $BINARY_NAME --repo ${{ github.repository }}
+
+          if gh release view "${TAG}" --repo "${{ github.repository }}" >/dev/null 2>&1; then
+            echo "Release ${TAG} already exists, uploading binaries..."
+            gh release upload "${TAG}" artifacts/komari-agent-* --repo "${{ github.repository }}" --clobber
+          else
+            echo "Creating release ${TAG}..."
+            gh release create "${TAG}" \
+              --repo "${{ github.repository }}" \
+              --target "${TARGET}" \
+              --title "${TAG}" \
+              --generate-notes \
+              artifacts/komari-agent-*
+          fi
         shell: bash
