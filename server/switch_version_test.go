@@ -4,7 +4,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/komari-monitor/komari-agent/update"
+	"github.com/VMCoud/komari-agent/update"
 )
 
 func TestRunSwitchVersion(t *testing.T) {

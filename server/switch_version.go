@@ -4,7 +4,7 @@ import (
 	"errors"
 	"log"
 
-	"github.com/komari-monitor/komari-agent/update"
+	"github.com/VMCoud/komari-agent/update"
 )
 
 func switchAgentVersion(version string, onRestartRequired func()) {

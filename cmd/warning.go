@@ -18,7 +18,7 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/komari-monitor/komari-agent/utils"
+	"github.com/VMCoud/komari-agent/utils"
 )
 
 const (

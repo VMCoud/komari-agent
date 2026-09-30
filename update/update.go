@@ -21,7 +21,7 @@ import (
 
 	"github.com/blang/semver"
 	goupdate "github.com/inconshreveable/go-update"
-	"github.com/komari-monitor/komari-agent/dnsresolver"
+	"github.com/VMCoud/komari-agent/dnsresolver"
 )
 
 var ErrRestartRequired = errors.New("update installed; restart required")

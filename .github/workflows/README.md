@@ -33,7 +33,7 @@ Dockerfile:
 The agent version is embedded with:
 
 ```sh
--ldflags="-X github.com/komari-monitor/komari-agent/update.CurrentVersion=${VERSION}"
+-ldflags="-X github.com/VMCoud/komari-agent/update.CurrentVersion=${VERSION}"
 ```
 
 Do not remove this without changing the agent update and reporting logic. The
