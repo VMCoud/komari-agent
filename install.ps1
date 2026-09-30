@@ -14,6 +14,7 @@ $ServiceName = "komari-agent"
 $GitHubProxy = ""
 $KomariArgs = @()
 $InstallVersion = ""
+$InstallBinaryName = "komari-agent.exe"
 
 # Parse script arguments
 for ($i = 0; $i -lt $args.Count; $i++) {
@@ -22,6 +23,7 @@ for ($i = 0; $i -lt $args.Count; $i++) {
         "--install-service-name" { $ServiceName = $args[$i + 1]; $i++; continue }
         "--install-ghproxy" { $GitHubProxy = $args[$i + 1]; $i++; continue }
         "--install-version" { $InstallVersion = $args[$i + 1]; $i++; continue }
+        "--install-binary-name" { $InstallBinaryName = $args[$i + 1]; $i++; continue }
         Default { $KomariArgs += $args[$i] }
     }
 }
@@ -190,6 +192,7 @@ catch {
 Log-Step "Installation configuration:"
 Log-Config "Service name: $ServiceName"
 Log-Config "Install directory: $InstallDir"
+Log-Config "Binary name: $InstallBinaryName"
 Log-Config "GitHub proxy: $ProxyDisplay"
 Log-Config "Agent arguments: $($KomariArgs -join ' ')"
 if ($InstallVersion -ne "") {
@@ -200,7 +203,7 @@ if ($InstallVersion -ne "") {
 
 # Paths
 $BinaryName = "komari-agent-windows-$arch.exe"
-$AgentPath = Join-Path $InstallDir "komari-agent.exe"
+$AgentPath = Join-Path $InstallDir $InstallBinaryName
 
 # Uninstall previous service and binary
 function Uninstall-Previous {
@@ -336,7 +339,7 @@ $argString = $KomariArgs -join ' '
 # embedded quotes made nssm store a broken Application path (komari-agent#118).
 nssm install $ServiceName $AgentPath $argString
 # Set display name and startup type using nssm
-nssm set $ServiceName DisplayName "Komari Agent Service"
+nssm set $ServiceName DisplayName "Komari Agent Service ($ServiceName)"
 nssm set $ServiceName Start SERVICE_AUTO_START
 nssm set $ServiceName AppExit Default Restart
 nssm set $ServiceName AppRestartDelay 5000
