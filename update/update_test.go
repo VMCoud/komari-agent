@@ -331,8 +331,8 @@ func TestStableUpdateReturnsRestartRequired(t *testing.T) {
 	release := testRelease("v1.2.4", false, false, time.Now(), assetName)
 
 	lister := func(owner, repo string) ([]githubRelease, error) {
-		if owner != "komari-monitor" || repo != "komari-agent" {
-			t.Fatalf("list releases repo = %s/%s, want komari-monitor/komari-agent", owner, repo)
+		if owner != "VMCoud" || repo != "komari-agent" {
+			t.Fatalf("list releases repo = %s/%s, want VMCoud/komari-agent", owner, repo)
 		}
 		return []githubRelease{release}, nil
 	}
@@ -416,8 +416,8 @@ func TestSnapshotUpdateReturnsRestartRequired(t *testing.T) {
 
 	deps := updateDeps{
 		list: func(owner, repo string) ([]githubRelease, error) {
-			if owner != "komari-monitor" || repo != "komari-agent" {
-				t.Fatalf("list releases repo = %s/%s, want komari-monitor/komari-agent", owner, repo)
+			if owner != "VMCoud" || repo != "komari-agent" {
+				t.Fatalf("list releases repo = %s/%s, want VMCoud/komari-agent", owner, repo)
 			}
 			return []githubRelease{release}, nil
 		},

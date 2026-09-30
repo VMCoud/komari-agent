@@ -28,7 +28,7 @@ var ErrRestartRequired = errors.New("update installed; restart required")
 
 var (
 	CurrentVersion string = "0.0.1"
-	Repo           string = "komari-monitor/komari-agent"
+	Repo           string = "VMCoud/komari-agent"
 )
 
 const (
